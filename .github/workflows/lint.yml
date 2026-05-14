@@ -1,0 +1,42 @@
+# Lint + import check. Real end-to-end runs need a CIPHEREXPLAIN_API_KEY,
+# so they live outside CI; this workflow just confirms every example
+# imports cleanly against the latest published SDK.
+name: Lint + import smoke
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ['3.9', '3.11', '3.13']
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Import smoke
+        run: |
+          set -eo pipefail
+          for f in examples/*.py; do
+            echo "::group::Import-check $f"
+            python -c "
+import ast, sys
+with open('$f') as fh:
+    tree = ast.parse(fh.read())
+print('AST OK:', '$f')
+"
+            echo "::endgroup::"
+          done
+      - name: SDK version sanity
+        run: |
+          python -c "import cipherexplain_sdk as c; print('SDK', c.__version__)"

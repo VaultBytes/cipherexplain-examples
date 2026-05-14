@@ -1,0 +1,9 @@
+# Core dependencies — everything every example needs.
+cipherexplain>=0.5.1
+numpy>=1.24
+scikit-learn>=1.3
+
+# Optional extras (each example checks/skips gracefully if missing):
+#   xgboost     — example 06
+#   lightgbm    — example 06
+#   cipherexplain[fhe] — example 12 (local CKKS encrypt/decrypt)
