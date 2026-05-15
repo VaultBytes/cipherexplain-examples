@@ -9,7 +9,7 @@ calibrated to a published per-feature sensitivity bound; the
 PrivacyAccountant tracks remaining ε budget per key.
 
 Run:
-  CIPHEREXPLAIN_API_KEY=vb_... python examples/09_dp_shap.py
+  CIPHEREXPLAIN_API_KEY=vb_... python examples/08_dp_shap.py
 """
 import os
 import sys

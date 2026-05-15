@@ -48,7 +48,7 @@ PyPI without coordinated server changes; the customer-visible flip
 happens when the operator sets the env var.
 
 Run:
-  CIPHEREXPLAIN_API_KEY=vb_... python examples/13_bgv_zk_b2b_attestation.py
+  CIPHEREXPLAIN_API_KEY=vb_... python examples/11_bgv_zk_b2b_attestation.py
 
 Requires:
   pip install 'cipherexplain[lattice]>=0.6.0'

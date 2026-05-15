@@ -14,7 +14,7 @@ Server side must run with CE_CRDC_ENABLED=1 and CE_STACK_COMPOSITION=1
 (both on by default on cipherexplain.vaultbytes.com).
 
 Run:
-  CIPHEREXPLAIN_API_KEY=vb_... python examples/10_cluster_a_verify.py
+  CIPHEREXPLAIN_API_KEY=vb_... python examples/09_cluster_a_verify.py
 """
 import os
 import sys

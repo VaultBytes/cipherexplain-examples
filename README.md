@@ -56,10 +56,10 @@ python examples/01_basic_lr.py
 | [05_sklearn_pipeline.py](examples/05_sklearn_pipeline.py) | `Pipeline([scaler, classifier])` — scaler params shipped, applied server-side |
 | [06_xgboost_lightgbm.py](examples/06_xgboost_lightgbm.py) | XGBoost + LightGBM gradient boosters via `register_xgboost` / `register_lightgbm` |
 | [07_mlp_ckks.py](examples/07_mlp_ckks.py) | Multi-layer perceptron under full CKKS evaluation |
-| [09_dp_shap.py](examples/09_dp_shap.py) | (ε, δ)-differential-privacy noise on published attributions + budget tracking |
-| [10_cluster_a_verify.py](examples/10_cluster_a_verify.py) | Cluster-A attestation: re-derive composition β + CRDC leaf locally |
-| [12_local_fhe_mode.py](examples/12_local_fhe_mode.py) | Client-side CKKS encryption — server never sees plaintext input |
-| [13_bgv_zk_b2b_attestation.py](examples/13_bgv_zk_b2b_attestation.py) | **v0.6.0** — `bgv_zk=True` lattice attestation upgrade for B2B internal-attestation use cases (`cf_attestation_mode = "ATTESTED_BGV_ZK"`) |
+| [08_dp_shap.py](examples/08_dp_shap.py) | (ε, δ)-differential-privacy noise on published attributions + budget tracking |
+| [09_cluster_a_verify.py](examples/09_cluster_a_verify.py) | Cluster-A attestation: re-derive composition β + CRDC leaf locally |
+| [10_local_fhe_mode.py](examples/10_local_fhe_mode.py) | Client-side CKKS encryption — server never sees plaintext input |
+| [11_bgv_zk_b2b_attestation.py](examples/11_bgv_zk_b2b_attestation.py) | **v0.6.0** — `bgv_zk=True` lattice attestation upgrade for B2B internal-attestation use cases (`cf_attestation_mode = "ATTESTED_BGV_ZK"`) |
 
 > Async-batch (`/explain/batch` webhook delivery) and API-key rotation are operational utilities documented in the [SDK reference](https://vaultbytes.com/cipherexplain) — not feature demos.
 
@@ -71,7 +71,7 @@ python examples/01_basic_lr.py
 Optional per-example:
 
 - `xgboost` / `lightgbm` for example 06
-- `cipherexplain[fhe]` (adds `openfhe`) for example 12
+- `cipherexplain[fhe]` (adds `openfhe`) for example 10
 
 ## Honest about what's attested
 
@@ -109,7 +109,7 @@ That's the gap as it stood before v0.6.0. The day the lattice arm lands, the sam
 
 **Honest caveat**: the proof binds the BGV ciphertext to the response, but it does NOT cryptographically bind the BGV ciphertext to the CKKS ciphertext that the SHAP computation runs on. Proving cross-encryption-scheme consistency without decrypting is provably impossible (scheme-switching hardness, IACR 2023/988). So in principle a malicious client could submit inconsistent pairs. This is fine for **B2B internal attestation** (a bank attests its own SHAP to a third-party auditor — no incentive to cheat against itself) but not for **consumer-facing ECOA/Reg-B adverse-action** where the bank IS the adversary the regulator is protecting the applicant from. For those use cases, stay on the default `bgv_zk=False`.
 
-See [example 13](examples/13_bgv_zk_b2b_attestation.py) for the full flow.
+See [example 11](examples/11_bgv_zk_b2b_attestation.py) for the full flow.
 
 Costs: ~33 KB additional request payload, ~100 ms additional client latency on Mac M1 (much less on Linux AMD64 with the LaZer C extension). The server-side gate is `CE_CF_USE_BGV_ZK=1` — until the deployment sets it, `bgv_zk=True` requests are accepted but the v1-B branch is skipped and the response stays on the v1-A path.
 

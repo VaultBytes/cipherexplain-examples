@@ -10,7 +10,7 @@ Requires the [fhe] extra (openfhe).
   pip install 'cipherexplain[fhe]'
 
 Run:
-  CIPHEREXPLAIN_API_KEY=vb_... python examples/12_local_fhe_mode.py
+  CIPHEREXPLAIN_API_KEY=vb_... python examples/10_local_fhe_mode.py
 """
 import os
 import sys
