@@ -59,6 +59,7 @@ python examples/01_basic_lr.py
 | [09_dp_shap.py](examples/09_dp_shap.py) | (ε, δ)-differential-privacy noise on published attributions + budget tracking |
 | [10_cluster_a_verify.py](examples/10_cluster_a_verify.py) | Cluster-A attestation: re-derive composition β + CRDC leaf locally |
 | [12_local_fhe_mode.py](examples/12_local_fhe_mode.py) | Client-side CKKS encryption — server never sees plaintext input |
+| [13_bgv_zk_b2b_attestation.py](examples/13_bgv_zk_b2b_attestation.py) | **v0.6.0** — `bgv_zk=True` lattice attestation upgrade for B2B internal-attestation use cases (`cf_attestation_mode = "ATTESTED_BGV_ZK"`) |
 
 > Async-batch (`/explain/batch` webhook delivery) and API-key rotation are operational utilities documented in the [SDK reference](https://vaultbytes.com/cipherexplain) — not feature demos.
 
@@ -98,7 +99,19 @@ What does this gap let a sophisticated attacker do, and what doesn't it?
 - It does **not** let an attacker forge the audit log or the reason codes — those run off the server's computation, not the customer's claim.
 - A malicious **client** could in principle send a commitment to one small change while encrypting a different one. The result: the audit log records one story, the customer decrypts another. The client is the only party who can detect this, by decrypting and checking. Under the standard "honest-but-curious server, self-interested client" threat model that regulated ML deployments operate under, this is not exploitable — the client gains nothing by lying to themselves.
 
-That's the entire gap. Until the lattice arm lands, `cf_attestation_mode` will read `"UNATTESTED"` to keep the record clean. The day it does, the same code paths flip to `"ATTESTED"` with no API change.
+That's the gap as it stood before v0.6.0. The day the lattice arm lands, the same code paths flip to a stronger attestation with no API change.
+
+### New in v0.6.0 — `bgv_zk=True` lattice attestation
+
+`client.counterfactual(..., bgv_zk=True)` adds the lattice arm described above. The SDK locally generates a fresh BGV keypair, encrypts the attribution vector a second time, builds a ~16.5 KB zero-knowledge proof (del Pino-Lyubashevsky-Seiler PKC 2019), and ships it alongside the existing v1-A request. The server verifies the lattice proof in ~50 ms without ever decrypting the BGV ciphertext, and upgrades `cf_attestation_mode` from `"UNATTESTED"` to `"ATTESTED_BGV_ZK"`.
+
+**What this proves**: the server cannot fabricate a SHAP output that contradicts its own FHE computation on the input. An auditor reading the response can verify, after the fact, that the explanation the customer received corresponded to a specific ciphertext under a specific BGV public key.
+
+**Honest caveat**: the proof binds the BGV ciphertext to the response, but it does NOT cryptographically bind the BGV ciphertext to the CKKS ciphertext that the SHAP computation runs on. Proving cross-encryption-scheme consistency without decrypting is provably impossible (scheme-switching hardness, IACR 2023/988). So in principle a malicious client could submit inconsistent pairs. This is fine for **B2B internal attestation** (a bank attests its own SHAP to a third-party auditor — no incentive to cheat against itself) but not for **consumer-facing ECOA/Reg-B adverse-action** where the bank IS the adversary the regulator is protecting the applicant from. For those use cases, stay on the default `bgv_zk=False`.
+
+See [example 13](examples/13_bgv_zk_b2b_attestation.py) for the full flow.
+
+Costs: ~33 KB additional request payload, ~100 ms additional client latency on Mac M1 (much less on Linux AMD64 with the LaZer C extension). The server-side gate is `CE_CF_USE_BGV_ZK=1` — until the deployment sets it, `bgv_zk=True` requests are accepted but the v1-B branch is skipped and the response stays on the v1-A path.
 
 ## Contributing
 
