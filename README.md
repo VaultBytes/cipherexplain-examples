@@ -56,11 +56,11 @@ python examples/01_basic_lr.py
 | [05_sklearn_pipeline.py](examples/05_sklearn_pipeline.py) | `Pipeline([scaler, classifier])` — scaler params shipped, applied server-side |
 | [06_xgboost_lightgbm.py](examples/06_xgboost_lightgbm.py) | XGBoost + LightGBM gradient boosters via `register_xgboost` / `register_lightgbm` |
 | [07_mlp_ckks.py](examples/07_mlp_ckks.py) | Multi-layer perceptron under full CKKS evaluation |
-| [08_async_batch.py](examples/08_async_batch.py) | Webhook-delivered batch explanations for compliance workflows |
 | [09_dp_shap.py](examples/09_dp_shap.py) | (ε, δ)-differential-privacy noise on published attributions + budget tracking |
 | [10_cluster_a_verify.py](examples/10_cluster_a_verify.py) | Cluster-A attestation: re-derive composition β + CRDC leaf locally |
-| [11_key_rotation_versioning.py](examples/11_key_rotation_versioning.py) | API key rotation + model version pinning for audit trails |
 | [12_local_fhe_mode.py](examples/12_local_fhe_mode.py) | Client-side CKKS encryption — server never sees plaintext input |
+
+> Async-batch (`/explain/batch` webhook delivery) and API-key rotation are operational utilities documented in the [SDK reference](https://vaultbytes.com/cipherexplain) — not feature demos.
 
 ## Requirements
 
